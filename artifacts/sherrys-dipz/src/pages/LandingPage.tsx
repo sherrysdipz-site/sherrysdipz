@@ -25,7 +25,11 @@ export function LandingPage() {
           <Link href="/">
             <img src={logoImg} alt="Sherry's Dipz" className="h-14 w-auto object-contain" />
           </Link>
-          
+
+          <div className="flex items-center gap-4">
+            <Link href="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hidden sm:block">
+              About
+            </Link>
           <Button 
             variant="outline" 
             className="relative rounded-full px-6 gap-2 border-primary/20 hover:border-primary/50"
@@ -40,6 +44,7 @@ export function LandingPage() {
               </span>
             )}
           </Button>
+          </div>
         </div>
       </header>
 

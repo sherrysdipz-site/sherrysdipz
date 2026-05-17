@@ -6,6 +6,7 @@ import { CartProvider } from "@/context/CartContext";
 import NotFound from "@/pages/not-found";
 
 import { LandingPage } from "@/pages/LandingPage";
+import { AboutPage } from "@/pages/AboutPage";
 import { CheckoutPage } from "@/pages/CheckoutPage";
 import { ThankYouPage } from "@/pages/ThankYouPage";
 import { CartSlideover } from "@/components/CartSlideover";
@@ -23,6 +24,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={LandingPage} />
+      <Route path="/about" component={AboutPage} />
       <Route path="/checkout" component={CheckoutPage} />
       <Route path="/thank-you" component={ThankYouPage} />
       <Route component={NotFound} />
