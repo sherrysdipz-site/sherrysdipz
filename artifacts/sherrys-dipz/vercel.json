@@ -1,0 +1,5 @@
+{
+  "installCommand": "cd ../.. && pnpm install",
+  "buildCommand": "cd ../.. && pnpm --filter @workspace/sherrys-dipz run build",
+  "outputDirectory": "dist"
+}
