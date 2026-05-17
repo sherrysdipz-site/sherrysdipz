@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { ShoppingBag } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { Link } from 'wouter';
+import logoImg from '@assets/IMG_0155_1778994569052.JPG';
+import heroImg from '@assets/53BA409D-8089-4D04-899D-20C277B9E873_4_5005_c_1778994899377.jpeg';
 
 export function LandingPage() {
   const { totalItems, setIsCartOpen } = useCart();
@@ -13,8 +15,8 @@ export function LandingPage() {
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <Link href="/" className="font-serif text-2xl font-bold text-primary tracking-tight">
-            Sherry's Dipz
+          <Link href="/">
+            <img src={logoImg} alt="Sherry's Dipz" className="h-14 w-auto object-contain" />
           </Link>
           
           <Button 
@@ -38,8 +40,8 @@ export function LandingPage() {
       <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <img 
-            src="/images/hero.png" 
-            alt="Mediterranean spread" 
+            src={heroImg}
+            alt="Sherry's Dipz — handcrafted Mediterranean dips" 
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black/40 mix-blend-multiply"></div>

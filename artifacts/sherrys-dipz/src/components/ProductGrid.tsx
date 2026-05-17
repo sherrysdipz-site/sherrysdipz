@@ -2,49 +2,50 @@ import React from 'react';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
 import { Minus, Plus, ShoppingBag } from 'lucide-react';
+import dipPhoto from '@assets/53BA409D-8089-4D04-899D-20C277B9E873_4_5005_c_1778994899377.jpeg';
 
 const products = [
   {
-    id: "1",
-    name: "Classic Hummus",
-    description: "Silky smooth, hand-blended chickpea hummus with tahini and lemon.",
-    price: 9.00,
-    image: "/images/hummus-classic.png"
-  },
-  {
-    id: "2",
-    name: "Roasted Red Pepper Hummus",
-    description: "Vibrant and smoky with fire-roasted peppers.",
-    price: 10.00,
-    image: "/images/hummus-red-pepper.png"
-  },
-  {
-    id: "3",
-    name: "Baba Ganoush",
-    description: "Charred eggplant with pomegranate molasses and herbs.",
-    price: 10.00,
-    image: "/images/baba-ganoush.png"
-  },
-  {
-    id: "4",
-    name: "Tzatziki",
-    description: "Creamy Greek yogurt with cucumber, garlic, and fresh dill.",
-    price: 9.00,
-    image: "/images/tzatziki.png"
-  },
-  {
-    id: "5",
-    name: "Muhammara",
-    description: "Roasted red pepper and walnut spread with a smoky kick.",
-    price: 10.00,
-    image: "/images/muhammara.png"
-  },
-  {
-    id: "6",
+    id: "labneh",
     name: "Labneh",
-    description: "Velvety Lebanese cream cheese drizzled with olive oil.",
-    price: 9.00,
-    image: "/images/labneh.png"
+    description: "Silky strained yogurt cheese, tangy and rich, drizzled with extra-virgin olive oil. A Lebanese staple.",
+    price: 12.00,
+    image: dipPhoto
+  },
+  {
+    id: "hummus",
+    name: "Hummus",
+    description: "Classic Lebanese hummus made with hand-picked chickpeas, fresh lemon juice, and premium tahini.",
+    price: 12.00,
+    image: dipPhoto
+  },
+  {
+    id: "olive-dip",
+    name: "Olive Dip",
+    description: "A savory, herb-laced blend of marinated olives and roasted garlic. Bold, briny, and irresistible.",
+    price: 10.00,
+    image: dipPhoto
+  },
+  {
+    id: "matbucha",
+    name: "Matbucha",
+    description: "Slow-cooked Moroccan tomato and roasted pepper spread. Deeply smoky, subtly spiced.",
+    price: 12.00,
+    image: dipPhoto
+  },
+  {
+    id: "tahini",
+    name: "Tahini",
+    description: "Pure ground sesame paste, nutty and velvety smooth. Made from the finest toasted sesame seeds.",
+    price: 10.00,
+    image: dipPhoto
+  },
+  {
+    id: "turkish-eggplant",
+    name: "Turkish Eggplant",
+    description: "Fire-roasted eggplant slow-cooked with tomatoes and peppers in the Ottoman tradition. Rich and warming.",
+    price: 15.00,
+    image: dipPhoto
   }
 ];
 

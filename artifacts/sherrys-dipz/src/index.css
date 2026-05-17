@@ -67,8 +67,8 @@
   --popover-foreground: 35 8% 16%;
   --popover-border: 38 20% 85%;
   
-  /* Olive Green primary */
-  --primary: 85 30% 35%;
+  /* Teal primary — matches logo */
+  --primary: 172 33% 47%;
   --primary-foreground: 40 40% 98%;
   
   /* Terracotta secondary */
@@ -85,7 +85,7 @@
   --destructive-foreground: 40 40% 98%;
   
   --input: 38 20% 80%;
-  --ring: 85 30% 35%;
+  --ring: 172 33% 47%;
 
   --app-font-sans: 'DM Sans', sans-serif;
   --app-font-serif: 'Fraunces', serif;
@@ -109,7 +109,7 @@
   --popover-foreground: 40 40% 96%;
   --popover-border: 35 8% 25%;
   
-  --primary: 85 30% 45%;
+  --primary: 172 33% 47%;
   --primary-foreground: 35 8% 12%;
   
   --secondary: 15 65% 50%;
@@ -125,7 +125,7 @@
   --destructive-foreground: 40 40% 96%;
   
   --input: 35 8% 25%;
-  --ring: 85 30% 45%;
+  --ring: 172 33% 47%;
 }
 
 @layer base {
