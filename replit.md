@@ -68,7 +68,7 @@ All dips are 8 oz, gluten free.
 
 - No live payment processing — cash on pickup/delivery or e-Transfer
 - All dips are gluten free (show on site)
-- e-Transfer email: sherrys.dipz@gmail.com
+- e-Transfer email: mrsizzypops@hotmail.com
 - Brand colors: teal (#4F9E8E) + terracotta (#C85A2A) + warm cream background
 - Fonts: Fraunces (display) + DM Sans (body)
 

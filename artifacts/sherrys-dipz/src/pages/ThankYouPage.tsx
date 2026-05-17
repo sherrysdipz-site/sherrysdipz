@@ -24,7 +24,7 @@ export function ThankYouPage() {
 
   const { confirmation, paymentMethod, customerName } = state;
   const isEtransfer = paymentMethod === 'etransfer';
-  const email = confirmation.etransferEmail || 'sherrys.dipz@gmail.com';
+  const email = confirmation.etransferEmail || 'mrsizzypops@hotmail.com';
 
   const copyEmail = () => {
     navigator.clipboard.writeText(email);

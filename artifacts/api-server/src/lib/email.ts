@@ -1,7 +1,7 @@
 import { logger } from "./logger";
 
-const ETRANSFER_EMAIL = "sherrys.dipz@gmail.com";
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "sherrys.dipz@gmail.com";
+const ETRANSFER_EMAIL = "mrsizzypops@hotmail.com";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "mrsizzypops@hotmail.com";
 const FROM_EMAIL = process.env.FROM_EMAIL ?? "orders@sherrys-dipz.com";
 
 export interface OrderEmailData {

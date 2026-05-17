@@ -82,7 +82,7 @@ router.post("/orders", async (req, res): Promise<void> => {
     totalAmount,
     etransferEmail:
       order.paymentMethod === "etransfer"
-        ? (process.env.ADMIN_EMAIL ?? "sherrys.dipz@gmail.com")
+        ? (process.env.ADMIN_EMAIL ?? "mrsizzypops@hotmail.com")
         : null,
   });
 });
