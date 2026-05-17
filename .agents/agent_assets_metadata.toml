@@ -42,3 +42,45 @@ id = "6m_ih2jlFCENJ08NS_3zk"
 uri = "file://artifacts/sherrys-dipz/public/images/labneh.png"
 type = "image"
 title = "Labneh product photo"
+
+[[generated]]
+id = "sTW1A3CkEuWG6hjsoFsvR"
+uri = "file://attached_assets/generated_images/hero_dips.png"
+type = "image"
+title = "hero mediterranean dip spread"
+
+[[generated]]
+id = "EXK8VKe6qhfLrMjbClCUt"
+uri = "file://attached_assets/generated_images/labneh.png"
+type = "image"
+title = "labneh ceramic bowl"
+
+[[generated]]
+id = "Kl15bskb1Tje_LsJ2hkfX"
+uri = "file://attached_assets/generated_images/hummus.png"
+type = "image"
+title = "hummus ceramic bowl"
+
+[[generated]]
+id = "reqeIc4LUtSvsjHMe7PW-"
+uri = "file://attached_assets/generated_images/olive_dip.png"
+type = "image"
+title = "olive dip bowl"
+
+[[generated]]
+id = "CjTy_wiBJ_PEy8rxInX0d"
+uri = "file://attached_assets/generated_images/matbucha.png"
+type = "image"
+title = "matbucha tomato dip"
+
+[[generated]]
+id = "yneAnXixy3cEkRdMS63yI"
+uri = "file://attached_assets/generated_images/tahini.png"
+type = "image"
+title = "tahini sesame paste"
+
+[[generated]]
+id = "BhRb1YlibMsphBdmdxeOT"
+uri = "file://attached_assets/generated_images/turkish_eggplant.png"
+type = "image"
+title = "turkish eggplant dip"

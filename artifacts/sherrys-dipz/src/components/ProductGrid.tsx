@@ -2,50 +2,55 @@ import React from 'react';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
 import { Minus, Plus, ShoppingBag } from 'lucide-react';
-import dipPhoto from '@assets/53BA409D-8089-4D04-899D-20C277B9E873_4_5005_c_1778994899377.jpeg';
+import labnehImg from '@assets/generated_images/labneh.png';
+import hummusImg from '@assets/generated_images/hummus.png';
+import oliveDipImg from '@assets/generated_images/olive_dip.png';
+import matbuchaImg from '@assets/generated_images/matbucha.png';
+import tahiniImg from '@assets/generated_images/tahini.png';
+import turkishEggplantImg from '@assets/generated_images/turkish_eggplant.png';
 
 const products = [
   {
     id: "labneh",
     name: "Labneh",
-    description: "Silky strained yogurt cheese, tangy and rich, drizzled with extra-virgin olive oil. A Lebanese staple.",
+    description: "Silky strained yogurt cheese made fresh to order — tangy, rich, and preservative free. Finished with a drizzle of extra-virgin olive oil.",
     price: 12.00,
-    image: dipPhoto
+    image: labnehImg
   },
   {
     id: "hummus",
     name: "Hummus",
-    description: "Classic Lebanese hummus made with hand-picked chickpeas, fresh lemon juice, and premium tahini.",
+    description: "Handcrafted Lebanese hummus with hand-picked chickpeas, fresh lemon juice, and premium tahini. No fillers, no preservatives — just the real thing.",
     price: 12.00,
-    image: dipPhoto
+    image: hummusImg
   },
   {
     id: "olive-dip",
     name: "Olive Dip",
-    description: "A savory, herb-laced blend of marinated olives and roasted garlic. Bold, briny, and irresistible.",
+    description: "A bold, herb-laced blend of marinated olives and roasted garlic. Hand-prepared in small batches, gluten free, and free from artificial additives.",
     price: 10.00,
-    image: dipPhoto
+    image: oliveDipImg
   },
   {
     id: "matbucha",
     name: "Matbucha",
-    description: "Slow-cooked Moroccan tomato and roasted pepper spread. Deeply smoky, subtly spiced.",
+    description: "Slow-cooked Moroccan tomato and roasted pepper spread. Made to order with whole ingredients — deeply smoky and preservative free.",
     price: 12.00,
-    image: dipPhoto
+    image: matbuchaImg
   },
   {
     id: "tahini",
     name: "Tahini",
-    description: "Pure ground sesame paste, nutty and velvety smooth. Made from the finest toasted sesame seeds.",
+    description: "Pure ground sesame paste — nothing added, nothing removed. Handcrafted in small batches from the finest toasted sesame seeds. Gluten free.",
     price: 10.00,
-    image: dipPhoto
+    image: tahiniImg
   },
   {
     id: "turkish-eggplant",
     name: "Turkish Eggplant",
-    description: "Fire-roasted eggplant slow-cooked with tomatoes and peppers in the Ottoman tradition. Rich and warming.",
+    description: "Fire-roasted eggplant slow-cooked with tomatoes and peppers. Made to order, preservative free, and bursting with authentic Ottoman flavour.",
     price: 15.00,
-    image: dipPhoto
+    image: turkishEggplantImg
   }
 ];
 
@@ -73,12 +78,17 @@ export function ProductGrid() {
                 alt={product.name}
                 className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
               />
+              <div className="absolute top-3 left-3">
+                <span className="bg-primary/90 text-primary-foreground text-xs font-medium px-2.5 py-1 rounded-full backdrop-blur-sm">
+                  GF · No Preservatives
+                </span>
+              </div>
             </div>
             
             <div className="p-6 flex flex-col flex-1">
               <div className="flex justify-between items-start mb-2">
                 <h3 className="text-xl font-serif font-medium text-foreground pr-4 leading-tight">{product.name}</h3>
-                <span className="font-medium text-primary">${product.price.toFixed(2)}</span>
+                <span className="font-medium text-primary whitespace-nowrap">${product.price.toFixed(2)}</span>
               </div>
               
               <p className="text-muted-foreground text-sm flex-1 mb-6">{product.description}</p>

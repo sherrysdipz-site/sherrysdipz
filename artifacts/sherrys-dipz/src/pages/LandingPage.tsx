@@ -1,11 +1,18 @@
 import React from 'react';
 import { ProductGrid } from '@/components/ProductGrid';
 import { Button } from '@/components/ui/button';
-import { ShoppingBag } from 'lucide-react';
+import { ShoppingBag, Leaf, HandHeart, Clock, FlaskConical } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { Link } from 'wouter';
 import logoImg from '@assets/logo_no_bg.png';
-import heroImg from '@assets/53BA409D-8089-4D04-899D-20C277B9E873_4_5005_c_1778994899377.jpeg';
+import heroImg from '@assets/generated_images/hero_dips.png';
+
+const BADGES = [
+  { icon: Leaf, label: 'Gluten Free' },
+  { icon: FlaskConical, label: 'No Preservatives' },
+  { icon: HandHeart, label: 'Hand Crafted' },
+  { icon: Clock, label: 'Made to Order' },
+];
 
 export function LandingPage() {
   const { totalItems, setIsCartOpen } = useCart();
@@ -37,23 +44,23 @@ export function LandingPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden">
+      <section className="relative h-[65vh] min-h-[520px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <img 
             src={heroImg}
             alt="Sherry's Dipz — handcrafted Mediterranean dips" 
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-black/40 mix-blend-multiply"></div>
+          <div className="absolute inset-0 bg-black/45 mix-blend-multiply"></div>
           <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
         </div>
         
         <div className="relative z-10 text-center px-6 max-w-3xl mx-auto mt-16">
           <h1 className="font-serif text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-lg leading-tight">
-            The taste of <br /> home, crafted.
+            Real ingredients.<br />No shortcuts.
           </h1>
           <p className="text-lg md:text-xl text-white/90 mb-10 drop-shadow-md font-medium max-w-xl mx-auto">
-            Small-batch Mediterranean dips made fresh in our kitchen. From velvety labneh to smoky baba ganoush, every jar tells a story.
+            Handcrafted Mediterranean dips made to order — preservative free, gluten free, and bursting with authentic flavour.
           </p>
           <Button 
             size="lg" 
@@ -62,8 +69,24 @@ export function LandingPage() {
               document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' });
             }}
           >
-            Explore the Menu
+            Order Now
           </Button>
+        </div>
+      </section>
+
+      {/* Trust Badges */}
+      <section className="py-10 border-b bg-card">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            {BADGES.map(({ icon: Icon, label }) => (
+              <div key={label} className="flex flex-col items-center gap-2">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Icon className="h-5 w-5 text-primary" />
+                </div>
+                <span className="text-sm font-medium text-foreground">{label}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -71,7 +94,9 @@ export function LandingPage() {
       <section id="products" className="py-20">
         <div className="max-w-3xl mx-auto text-center px-6 mb-12">
           <h2 className="font-serif text-4xl font-bold text-foreground mb-4">Our Dips</h2>
-          <p className="text-muted-foreground text-lg">Handcrafted daily in small batches using premium olive oil and fresh ingredients.</p>
+          <p className="text-muted-foreground text-lg">
+            Every jar is made fresh when you order — no preservatives, no fillers, just pure ingredients you can taste.
+          </p>
         </div>
         <ProductGrid />
       </section>
@@ -81,7 +106,7 @@ export function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 text-center">
           <h2 className="font-serif text-3xl font-bold mb-4">Sherry's Dipz</h2>
           <p className="text-primary-foreground/80 mb-4 max-w-md mx-auto">
-            Bringing authentic Mediterranean flavours to your table.
+            Preservative free. Gluten free. Made with love, made to order.
           </p>
           <a
             href="https://www.instagram.com/sherrysdipz?igsh=eDluOWkxaDlyMmFl"
@@ -96,7 +121,7 @@ export function LandingPage() {
           </a>
           <div className="pt-8 border-t border-primary-foreground/20 text-sm text-primary-foreground/60 flex flex-col sm:flex-row items-center justify-between">
             <p>&copy; {new Date().getFullYear()} Sherry's Dipz. All rights reserved.</p>
-            <p className="mt-4 sm:mt-0">Made with love in our kitchen.</p>
+            <p className="mt-4 sm:mt-0">Handcrafted in small batches.</p>
           </div>
         </div>
       </footer>
