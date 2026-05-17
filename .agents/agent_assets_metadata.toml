@@ -1,0 +1,44 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "WX7M2Raq2h_Ee1D-tz6V5"
+uri = "file://artifacts/sherrys-dipz/public/images/hero.png"
+type = "image"
+title = "Mediterranean dip hero background"
+
+[[generated]]
+id = "gV20GfrVhphO1UFyPqzm-"
+uri = "file://artifacts/sherrys-dipz/public/images/hummus-classic.png"
+type = "image"
+title = "Classic Hummus product photo"
+
+[[generated]]
+id = "C4DAbkVEESbukOPVHzaub"
+uri = "file://artifacts/sherrys-dipz/public/images/hummus-red-pepper.png"
+type = "image"
+title = "Roasted Red Pepper Hummus"
+
+[[generated]]
+id = "cVC_J5WqvUNpjNqPAcZ00"
+uri = "file://artifacts/sherrys-dipz/public/images/baba-ganoush.png"
+type = "image"
+title = "Baba Ganoush product photo"
+
+[[generated]]
+id = "-QRf8htdcMpMtQZRZI4I6"
+uri = "file://artifacts/sherrys-dipz/public/images/tzatziki.png"
+type = "image"
+title = "Tzatziki product photo"
+
+[[generated]]
+id = "o2CNNJc0nvrIJcx4nqYNJ"
+uri = "file://artifacts/sherrys-dipz/public/images/muhammara.png"
+type = "image"
+title = "Muhammara product photo"
+
+[[generated]]
+id = "6m_ih2jlFCENJ08NS_3zk"
+uri = "file://artifacts/sherrys-dipz/public/images/labneh.png"
+type = "image"
+title = "Labneh product photo"

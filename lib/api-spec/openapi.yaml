@@ -3,13 +3,17 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Sherry's Dipz order management API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: products
+    description: Product operations
+  - name: orders
+    description: Order operations
 paths:
   /healthz:
     get:
@@ -24,6 +28,55 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /products:
+    get:
+      operationId: listProducts
+      tags: [products]
+      summary: List all products
+      description: Returns the full menu of available dips
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+
+  /orders:
+    post:
+      operationId: createOrder
+      tags: [orders]
+      summary: Place a new order
+      description: Submits an order, logs it to Google Sheets, and sends email notifications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderInput"
+      responses:
+        "201":
+          description: Order placed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderConfirmation"
+        "400":
+          description: Invalid order data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +87,96 @@ components:
       required:
         - status
 
+    Product:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - price
+        - emoji
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        emoji:
+          type: string
+
+    OrderItem:
+      type: object
+      required:
+        - productId
+        - name
+        - quantity
+        - price
+      properties:
+        productId:
+          type: string
+        name:
+          type: string
+        quantity:
+          type: integer
+          minimum: 1
+        price:
+          type: number
+
+    OrderInput:
+      type: object
+      required:
+        - customerName
+        - phone
+        - email
+        - items
+        - fulfillmentType
+        - paymentMethod
+      properties:
+        customerName:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+          minItems: 1
+        fulfillmentType:
+          type: string
+          enum: [pickup, delivery]
+        deliveryAddress:
+          type: ["string", "null"]
+        paymentMethod:
+          type: string
+          enum: [cash, etransfer]
+        notes:
+          type: ["string", "null"]
+
+    OrderConfirmation:
+      type: object
+      required:
+        - orderId
+        - message
+        - totalAmount
+      properties:
+        orderId:
+          type: string
+        message:
+          type: string
+        totalAmount:
+          type: number
+        etransferEmail:
+          type: ["string", "null"]
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
