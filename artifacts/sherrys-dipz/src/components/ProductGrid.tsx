@@ -2,12 +2,7 @@ import React from 'react';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
 import { Minus, Plus, ShoppingBag } from 'lucide-react';
-import labnehImg from '@assets/generated_images/labneh.png';
-import hummusImg from '@assets/generated_images/hummus.png';
-import oliveDipImg from '@assets/generated_images/olive_dip.png';
-import matbuchaImg from '@assets/generated_images/matbucha.png';
-import tahiniImg from '@assets/generated_images/tahini.png';
-import turkishEggplantImg from '@assets/generated_images/turkish_eggplant.png';
+import dipPhoto from '@assets/53BA409D-8089-4D04-899D-20C277B9E873_4_5005_c_1778994899377.jpeg';
 
 const products = [
   {
@@ -15,42 +10,42 @@ const products = [
     name: "Labneh",
     description: "Silky strained yogurt cheese made fresh to order — tangy, rich, and preservative free. Finished with a drizzle of extra-virgin olive oil.",
     price: 12.00,
-    image: labnehImg
+    image: dipPhoto
   },
   {
     id: "hummus",
     name: "Hummus",
     description: "Handcrafted Lebanese hummus with hand-picked chickpeas, fresh lemon juice, and premium tahini. No fillers, no preservatives — just the real thing.",
     price: 12.00,
-    image: hummusImg
+    image: dipPhoto
   },
   {
     id: "olive-dip",
     name: "Olive Dip",
     description: "A bold, herb-laced blend of marinated olives and roasted garlic. Hand-prepared in small batches, gluten free, and free from artificial additives.",
     price: 10.00,
-    image: oliveDipImg
+    image: dipPhoto
   },
   {
     id: "matbucha",
     name: "Matbucha",
     description: "Slow-cooked Moroccan tomato and roasted pepper spread. Made to order with whole ingredients — deeply smoky and preservative free.",
     price: 12.00,
-    image: matbuchaImg
+    image: dipPhoto
   },
   {
     id: "tahini",
     name: "Tahini",
     description: "Pure ground sesame paste — nothing added, nothing removed. Handcrafted in small batches from the finest toasted sesame seeds. Gluten free.",
     price: 10.00,
-    image: tahiniImg
+    image: dipPhoto
   },
   {
     id: "turkish-eggplant",
     name: "Turkish Eggplant",
     description: "Fire-roasted eggplant slow-cooked with tomatoes and peppers. Made to order, preservative free, and bursting with authentic Ottoman flavour.",
     price: 15.00,
-    image: turkishEggplantImg
+    image: dipPhoto
   }
 ];
 

@@ -5,7 +5,7 @@ import { ShoppingBag, Leaf, HandHeart, Clock, FlaskConical } from 'lucide-react'
 import { useCart } from '@/context/CartContext';
 import { Link } from 'wouter';
 import logoImg from '@assets/logo_no_bg.png';
-import heroImg from '@assets/generated_images/hero_dips.png';
+import heroImg from '@assets/53BA409D-8089-4D04-899D-20C277B9E873_4_5005_c_1778994899377.jpeg';
 
 const BADGES = [
   { icon: Leaf, label: 'Gluten Free' },
