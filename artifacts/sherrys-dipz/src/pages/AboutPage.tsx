@@ -3,7 +3,7 @@ import { Link } from 'wouter';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
 import { ShoppingBag, ArrowRight } from 'lucide-react';
-import logoImg from '@assets/logo_no_bg.png';
+import logoImg from '/logo_cropped.png';
 import founderImg from '@assets/IMG_8816_1778995907725.jpeg';
 
 export function AboutPage() {
@@ -13,9 +13,9 @@ export function AboutPage() {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 h-[170px] flex items-center justify-between">
           <Link href="/">
-            <img src={logoImg} alt="Sherry's Dipz" className="h-14 w-auto object-contain" />
+            <img src={logoImg} alt="Sherry's Dipz" className="h-[160px] w-auto object-contain -ml-12" />
           </Link>
           <div className="flex items-center gap-4">
             <Link href="/about" className="text-sm font-medium text-primary hidden sm:block">

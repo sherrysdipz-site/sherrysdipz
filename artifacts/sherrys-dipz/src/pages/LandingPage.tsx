@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { ShoppingBag, Leaf, HandHeart, Clock, FlaskConical } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { Link } from 'wouter';
-import logoImg from '@assets/logo_no_bg.png';
+import logoImg from '/logo_cropped.png';
 import heroImg from '@assets/53BA409D-8089-4D04-899D-20C277B9E873_4_5005_c_1778994899377.jpeg';
 
 const BADGES = [
@@ -21,9 +21,9 @@ export function LandingPage() {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 h-[170px] flex items-center justify-between">
           <Link href="/">
-            <img src={logoImg} alt="Sherry's Dipz" className="h-14 w-auto object-contain" />
+            <img src={logoImg} alt="Sherry's Dipz" className="h-[160px] w-auto object-contain -ml-12" />
           </Link>
 
           <div className="flex items-center gap-4">
