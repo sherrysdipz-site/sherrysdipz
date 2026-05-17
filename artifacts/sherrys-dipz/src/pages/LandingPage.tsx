@@ -23,7 +23,7 @@ export function LandingPage() {
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b">
         <div className="max-w-7xl mx-auto px-6 h-[170px] flex items-center justify-between">
           <Link href="/">
-            <img src={logoImg} alt="Sherry's Dipz" className="h-[160px] w-auto object-contain -ml-12" />
+            <img src={logoImg} alt="Sherry's Dipz" className="h-[160px] w-auto object-contain -ml-6" />
           </Link>
 
           <div className="flex items-center gap-4">
