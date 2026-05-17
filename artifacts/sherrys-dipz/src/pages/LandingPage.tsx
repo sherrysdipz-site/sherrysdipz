@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { ShoppingBag } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { Link } from 'wouter';
-import logoImg from '@assets/Untitled_design_(1)_1778995431629.png';
+import logoImg from '@assets/logo_no_bg.png';
 import heroImg from '@assets/53BA409D-8089-4D04-899D-20C277B9E873_4_5005_c_1778994899377.jpeg';
 
 export function LandingPage() {
