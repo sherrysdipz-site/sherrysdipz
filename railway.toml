@@ -4,3 +4,6 @@ buildCommand = "pnpm install --no-frozen-lockfile && pnpm --filter @workspace/ap
 
 [deploy]
 startCommand = "pnpm --filter @workspace/api-server start"
+
+[variables]
+NIXPACKS_INSTALL_CMD = "pnpm install --no-frozen-lockfile"
