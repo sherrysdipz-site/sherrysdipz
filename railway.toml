@@ -2,8 +2,11 @@
 builder = "nixpacks"
 buildCommand = "pnpm install --no-frozen-lockfile && pnpm --filter @workspace/api-server build"
 
-[deploy]
-startCommand = "pnpm --filter @workspace/api-server start"
-
-[variables]
+[build.env]
 NIXPACKS_INSTALL_CMD = "pnpm install --no-frozen-lockfile"
+
+[deploy]
+startCommand = "PORT=8080 ADMIN_EMAIL=sherrysdipz@gmail.com pnpm --filter @workspace/api-server start"
+
+[deploy.healthcheck]
+path = "/api/healthz"
