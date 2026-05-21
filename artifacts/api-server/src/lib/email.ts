@@ -1,8 +1,9 @@
+import { Resend } from "resend";
 import { logger } from "./logger";
 
-const ETRANSFER_EMAIL = "mrsizzypops@hotmail.com";
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "mrsizzypops@hotmail.com";
-const FROM_EMAIL = process.env.FROM_EMAIL ?? "orders@sherrys-dipz.com";
+const FROM_EMAIL = "onboarding@resend.dev";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "sherrysdipz@gmail.com";
+const ETRANSFER_EMAIL = process.env.ETRANSFER_EMAIL ?? "sherrysdipz@gmail.com";
 
 export interface OrderEmailData {
   orderId: string;
@@ -16,12 +17,6 @@ export interface OrderEmailData {
   paymentMethod: string;
   notes?: string | null;
   date: string;
-}
-
-function formatItemsTable(items: OrderEmailData["items"]): string {
-  return items
-    .map((i) => `  • ${i.quantity}x ${i.name} — $${(i.quantity * i.price).toFixed(2)}`)
-    .join("\n");
 }
 
 function buildAdminEmailHtml(order: OrderEmailData): string {
@@ -121,45 +116,42 @@ function buildCustomerEmailHtml(order: OrderEmailData): string {
 }
 
 export async function sendOrderEmails(order: OrderEmailData): Promise<void> {
-  const resendClient = getResendClient();
-  if (!resendClient) {
-    logger.warn("Resend not configured — skipping email send");
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    logger.warn("RESEND_API_KEY not set — skipping email send");
     return;
   }
 
+  const resend = new Resend(apiKey);
+
   try {
-    await Promise.all([
-      resendClient.emails.send({
+    const [adminResult, customerResult] = await Promise.all([
+      resend.emails.send({
         from: `Sherry's Dipz <${FROM_EMAIL}>`,
         to: [ADMIN_EMAIL],
         subject: `New Order #${order.orderId} — ${order.customerName} ($${order.totalAmount.toFixed(2)})`,
         html: buildAdminEmailHtml(order),
       }),
-      resendClient.emails.send({
+      resend.emails.send({
         from: `Sherry's Dipz <${FROM_EMAIL}>`,
         to: [order.customerEmail],
         subject: `Your Sherry's Dipz order is confirmed! (#${order.orderId})`,
         html: buildCustomerEmailHtml(order),
       }),
     ]);
-    logger.info({ orderId: order.orderId }, "Order emails sent");
+
+    if (adminResult.error) {
+      logger.error({ error: adminResult.error, orderId: order.orderId }, "Admin email failed");
+      throw new Error(`Admin email failed: ${adminResult.error.message}`);
+    }
+    if (customerResult.error) {
+      logger.error({ error: customerResult.error, orderId: order.orderId }, "Customer email failed");
+      throw new Error(`Customer email failed: ${customerResult.error.message}`);
+    }
+
+    logger.info({ orderId: order.orderId }, "Order emails sent successfully");
   } catch (err) {
     logger.error({ err, orderId: order.orderId }, "Failed to send order emails");
     throw err;
-  }
-}
-
-function getResendClient(): any | null {
-  // This will be populated once the Resend integration is connected
-  // via Replit's connector proxy. The integration code will be injected here.
-  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
-  if (!hostname) return null;
-
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { getUncachableResendClient } = require("./resend-client");
-    return getUncachableResendClient();
-  } catch {
-    return null;
   }
 }
