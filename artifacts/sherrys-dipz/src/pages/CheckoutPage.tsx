@@ -84,6 +84,10 @@ export function CheckoutPage() {
             customerName: data.customerName
           } 
         });
+      },
+      onError: (err) => {
+        console.error('Order submission failed:', err);
+        alert('Something went wrong placing your order. Please try again or contact us directly.');
       }
     });
   };

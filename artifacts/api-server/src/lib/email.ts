@@ -145,11 +145,13 @@ export async function sendOrderEmails(order: OrderEmailData): Promise<void> {
       throw new Error(`Admin email failed: ${adminResult.error.message}`);
     }
     if (customerResult.error) {
-      logger.error({ error: customerResult.error, orderId: order.orderId }, "Customer email failed");
-      throw new Error(`Customer email failed: ${customerResult.error.message}`);
+      logger.warn(
+        { error: customerResult.error, orderId: order.orderId, customerEmail: order.customerEmail },
+        "Customer confirmation email failed — order still accepted"
+      );
+    } else {
+      logger.info({ orderId: order.orderId }, "Order emails sent successfully");
     }
-
-    logger.info({ orderId: order.orderId }, "Order emails sent successfully");
   } catch (err) {
     logger.error({ err, orderId: order.orderId }, "Failed to send order emails");
     throw err;
