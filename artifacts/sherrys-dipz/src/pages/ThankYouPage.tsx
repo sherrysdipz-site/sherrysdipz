@@ -78,7 +78,7 @@ export function ThankYouPage() {
 
         {paymentMethod === 'cash' && (
           <div className="bg-muted rounded-xl p-6 mb-8 text-left text-sm text-muted-foreground">
-            Please have <strong className="text-foreground">${confirmation.totalAmount.toFixed(2)}</strong> in cash ready when your order arrives.
+            Please have <strong className="text-foreground">${confirmation.totalAmount.toFixed(2)}</strong> in cash ready when picking up your order.
           </div>
         )}
 
