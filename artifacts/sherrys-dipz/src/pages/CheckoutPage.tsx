@@ -94,9 +94,10 @@ export function CheckoutPage() {
           }
         });
       },
-      onError: (err) => {
+      onError: (err: unknown) => {
         console.error('Order submission failed:', err);
-        alert('Something went wrong placing your order. Please try again or contact us directly.');
+        const msg = err instanceof Error ? err.message : String(err);
+        alert(`Order failed: ${msg}\n\nPlease try again or contact us directly.`);
       }
     });
   };
