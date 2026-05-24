@@ -71,6 +71,8 @@ router.post("/orders", async (req, res): Promise<void> => {
       paymentMethod: order.paymentMethod,
       notes: order.notes,
       date: dateStr,
+      pickupDate: order.pickupDate,
+      pickupTime: order.pickupTime,
     });
   } catch (err) {
     req.log.error({ err }, "Email send failed");
