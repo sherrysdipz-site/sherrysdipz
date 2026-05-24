@@ -52,7 +52,9 @@ export const CreateOrderBody = zod.object({
   "fulfillmentType": zod.enum(['pickup', 'delivery']),
   "deliveryAddress": zod.string().nullish(),
   "paymentMethod": zod.enum(['cash', 'etransfer']),
-  "notes": zod.string().nullish()
+  "notes": zod.string().nullish(),
+  "pickupDate": zod.string().nullish(),
+  "pickupTime": zod.string().nullish()
 })
 
 
