@@ -53,6 +53,10 @@ export interface OrderInput {
   paymentMethod: OrderInputPaymentMethod;
   /** @nullable */
   notes?: string | null;
+  /** @nullable */
+  pickupDate?: string | null;
+  /** @nullable */
+  pickupTime?: string | null;
 }
 
 export interface OrderConfirmation {
