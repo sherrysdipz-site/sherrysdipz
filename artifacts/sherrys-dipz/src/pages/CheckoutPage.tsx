@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useCart } from '@/context/CartContext';
 import { useLocation, Link } from 'wouter';
 import { useForm } from 'react-hook-form';
@@ -8,10 +8,29 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { ChevronLeft, Loader2, Store, Truck, Banknote, CreditCard } from 'lucide-react';
+import { ChevronLeft, Loader2, Store, Truck, Banknote, CreditCard, Calendar, Clock } from 'lucide-react';
 import { useCreateOrder } from '@workspace/api-client-react';
+
+const TIME_SLOTS = ['2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'];
+
+function getAvailablePickupDates(): { label: string; value: string }[] {
+  const results: { label: string; value: string }[] = [];
+  const today = new Date();
+  // Look ahead up to 30 days, collect Thu/Fri/Sat that are at least 2 days away
+  for (let i = 2; i <= 30 && results.length < 8; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    const dow = d.getDay(); // 0=Sun,1=Mon,2=Tue,3=Wed,4=Thu,5=Fri,6=Sat
+    if (dow === 4 || dow === 5 || dow === 6) {
+      const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][dow];
+      const label = `${dayName}, ${d.toLocaleDateString('en-CA', { month: 'long', day: 'numeric' })}`;
+      const value = d.toISOString().split('T')[0]; // YYYY-MM-DD
+      results.push({ label, value });
+    }
+  }
+  return results;
+}
 
 const checkoutSchema = z.object({
   customerName: z.string().min(2, "Name is required"),
@@ -20,7 +39,9 @@ const checkoutSchema = z.object({
   fulfillmentType: z.enum(['pickup', 'delivery']),
   deliveryAddress: z.string().optional().nullable(),
   paymentMethod: z.enum(['cash', 'etransfer']),
-  notes: z.string().optional().nullable()
+  notes: z.string().optional().nullable(),
+  pickupDate: z.string().optional().nullable(),
+  pickupTime: z.string().optional().nullable(),
 }).superRefine((data, ctx) => {
   if (data.fulfillmentType === 'delivery' && (!data.deliveryAddress || data.deliveryAddress.length < 5)) {
     ctx.addIssue({
@@ -28,6 +49,14 @@ const checkoutSchema = z.object({
       message: "Delivery address is required for delivery",
       path: ['deliveryAddress']
     });
+  }
+  if (data.fulfillmentType === 'pickup') {
+    if (!data.pickupDate) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Please select a pickup date", path: ['pickupDate'] });
+    }
+    if (!data.pickupTime) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Please select a pickup time", path: ['pickupTime'] });
+    }
   }
 });
 
@@ -37,6 +66,7 @@ export function CheckoutPage() {
   const { items, subtotal, totalItems, clearCart } = useCart();
   const [, setLocation] = useLocation();
   const createOrder = useCreateOrder();
+  const availableDates = useMemo(() => getAvailablePickupDates(), []);
 
   const form = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutSchema),
@@ -47,17 +77,17 @@ export function CheckoutPage() {
       fulfillmentType: 'pickup',
       deliveryAddress: '',
       paymentMethod: 'etransfer',
-      notes: ''
+      notes: '',
+      pickupDate: '',
+      pickupTime: '',
     }
   });
 
   const watchFulfillment = form.watch('fulfillmentType');
+  const watchPickupDate = form.watch('pickupDate');
 
   useEffect(() => {
-    // Redirect back to home if cart is empty
-    if (items.length === 0) {
-      setLocation('/');
-    }
+    if (items.length === 0) setLocation('/');
   }, [items.length, setLocation]);
 
   const onSubmit = (data: CheckoutFormValues) => {
@@ -73,16 +103,20 @@ export function CheckoutPage() {
         ...data,
         items: orderItems,
         deliveryAddress: data.fulfillmentType === 'pickup' ? null : data.deliveryAddress,
+        pickupDate: data.fulfillmentType === 'pickup' ? data.pickupDate : null,
+        pickupTime: data.fulfillmentType === 'pickup' ? data.pickupTime : null,
       }
     }, {
       onSuccess: (confirmation) => {
         clearCart();
-        setLocation('/thank-you', { 
-          state: { 
-            confirmation, 
+        setLocation('/thank-you', {
+          state: {
+            confirmation,
             paymentMethod: data.paymentMethod,
-            customerName: data.customerName
-          } 
+            customerName: data.customerName,
+            pickupDate: data.fulfillmentType === 'pickup' ? data.pickupDate : null,
+            pickupTime: data.fulfillmentType === 'pickup' ? data.pickupTime : null,
+          }
         });
       },
       onError: (err) => {
@@ -112,7 +146,7 @@ export function CheckoutPage() {
         <div className="lg:col-span-7">
           <div className="bg-card border rounded-xl p-6 md:p-8 shadow-sm">
             <h2 className="font-serif text-2xl font-bold mb-6 text-foreground">Order Details</h2>
-            
+
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 {/* Contact Info */}
@@ -131,7 +165,6 @@ export function CheckoutPage() {
                       </FormItem>
                     )}
                   />
-                  
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
@@ -188,7 +221,6 @@ export function CheckoutPage() {
                                 </div>
                               </FormLabel>
                             </FormItem>
-                            
                             <FormItem>
                               <FormLabel className="[&:has([data-state=checked])>div]:border-primary [&:has([data-state=checked])>div]:bg-primary/5 cursor-pointer">
                                 <FormControl>
@@ -207,6 +239,70 @@ export function CheckoutPage() {
                     )}
                   />
 
+                  {/* Pickup date + time — only shown for pickup */}
+                  {watchFulfillment === 'pickup' && (
+                    <div className="mt-4 space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                      <FormField
+                        control={form.control}
+                        name="pickupDate"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="flex items-center gap-1.5"><Calendar className="h-4 w-4" /> Pickup Date</FormLabel>
+                            <FormControl>
+                              <div className="flex flex-col gap-2">
+                                {availableDates.map(({ label, value }) => (
+                                  <label
+                                    key={value}
+                                    className={`flex items-center gap-3 border rounded-lg px-4 py-3 cursor-pointer transition-colors ${field.value === value ? 'border-primary bg-primary/5 font-medium' : 'hover:bg-muted/50'}`}
+                                  >
+                                    <input
+                                      type="radio"
+                                      className="accent-primary"
+                                      checked={field.value === value}
+                                      onChange={() => {
+                                        field.onChange(value);
+                                        form.setValue('pickupTime', '');
+                                      }}
+                                    />
+                                    <span>{label}</span>
+                                  </label>
+                                ))}
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {watchPickupDate && (
+                        <FormField
+                          control={form.control}
+                          name="pickupTime"
+                          render={({ field }) => (
+                            <FormItem className="animate-in fade-in slide-in-from-top-4 duration-300">
+                              <FormLabel className="flex items-center gap-1.5"><Clock className="h-4 w-4" /> Pickup Time</FormLabel>
+                              <FormControl>
+                                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                                  {TIME_SLOTS.map((slot) => (
+                                    <button
+                                      key={slot}
+                                      type="button"
+                                      onClick={() => field.onChange(slot)}
+                                      className={`border rounded-lg py-2.5 text-sm font-medium transition-colors ${field.value === slot ? 'border-primary bg-primary/5 text-primary' : 'hover:bg-muted/50'}`}
+                                    >
+                                      {slot}
+                                    </button>
+                                  ))}
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                    </div>
+                  )}
+
                   {watchFulfillment === 'delivery' && (
                     <div className="mt-4 animate-in fade-in slide-in-from-top-4 duration-300">
                       <FormField
@@ -216,10 +312,10 @@ export function CheckoutPage() {
                           <FormItem>
                             <FormLabel>Delivery Address</FormLabel>
                             <FormControl>
-                              <Textarea 
-                                placeholder="123 Main St, Apartment 4B..." 
+                              <Textarea
+                                placeholder="123 Main St, Apartment 4B..."
                                 className="resize-none"
-                                {...field} 
+                                {...field}
                                 value={field.value || ''}
                                 data-testid="input-address"
                               />
@@ -259,7 +355,6 @@ export function CheckoutPage() {
                                 </div>
                               </FormLabel>
                             </FormItem>
-                            
                             <FormItem>
                               <FormLabel className="[&:has([data-state=checked])>div]:border-primary [&:has([data-state=checked])>div]:bg-primary/5 cursor-pointer">
                                 <FormControl>
@@ -268,7 +363,7 @@ export function CheckoutPage() {
                                 <div className="border rounded-lg p-4 flex flex-col items-center justify-center gap-2 hover:bg-muted/50 transition-colors text-center">
                                   <Banknote className="h-6 w-6" />
                                   <span className="font-medium">Cash</span>
-                                  <span className="text-xs text-muted-foreground">Pay on receipt</span>
+                                  <span className="text-xs text-muted-foreground">Pay on pickup</span>
                                 </div>
                               </FormLabel>
                             </FormItem>
@@ -290,10 +385,10 @@ export function CheckoutPage() {
                       <FormItem>
                         <FormLabel>Order Notes (Optional)</FormLabel>
                         <FormControl>
-                          <Textarea 
-                            placeholder="Any special requests or delivery instructions?" 
+                          <Textarea
+                            placeholder="Any special requests?"
                             className="resize-none"
-                            {...field} 
+                            {...field}
                             value={field.value || ''}
                             data-testid="input-notes"
                           />
@@ -305,9 +400,9 @@ export function CheckoutPage() {
                 </div>
 
                 <div className="pt-4 lg:hidden">
-                  <Button 
-                    type="submit" 
-                    className="w-full h-14 text-lg font-serif" 
+                  <Button
+                    type="submit"
+                    className="w-full h-14 text-lg font-serif"
                     disabled={createOrder.isPending}
                     data-testid="button-submit-order-mobile"
                   >
@@ -327,7 +422,7 @@ export function CheckoutPage() {
         <div className="lg:col-span-5">
           <div className="bg-card border rounded-xl p-6 md:p-8 shadow-sm sticky top-24">
             <h3 className="font-serif text-xl font-bold mb-6 text-foreground">Order Summary</h3>
-            
+
             <div className="space-y-4 mb-6 max-h-[40vh] overflow-y-auto pr-2">
               {items.map((item) => (
                 <div key={item.productId} className="flex justify-between text-sm">
@@ -339,7 +434,7 @@ export function CheckoutPage() {
                 </div>
               ))}
             </div>
-            
+
             <div className="border-t pt-4 space-y-3">
               <div className="flex justify-between text-muted-foreground">
                 <span>Subtotal ({totalItems} items)</span>
@@ -351,8 +446,8 @@ export function CheckoutPage() {
               </div>
             </div>
 
-            <Button 
-              className="w-full h-14 text-lg font-serif mt-8 hidden lg:flex" 
+            <Button
+              className="w-full h-14 text-lg font-serif mt-8 hidden lg:flex"
               onClick={form.handleSubmit(onSubmit)}
               disabled={createOrder.isPending}
               data-testid="button-submit-order"
@@ -363,7 +458,7 @@ export function CheckoutPage() {
                 `Place Order`
               )}
             </Button>
-            
+
             <p className="text-xs text-center text-muted-foreground mt-4">
               By placing your order, you agree to our Terms of Service.
             </p>
