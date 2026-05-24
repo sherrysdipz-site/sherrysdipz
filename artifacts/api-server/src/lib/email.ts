@@ -17,6 +17,8 @@ export interface OrderEmailData {
   paymentMethod: string;
   notes?: string | null;
   date: string;
+  pickupDate?: string | null;
+  pickupTime?: string | null;
 }
 
 function buildAdminEmailHtml(order: OrderEmailData): string {
@@ -46,6 +48,8 @@ function buildAdminEmailHtml(order: OrderEmailData): string {
       <p style="margin:4px 0;color:#4a4035;"><strong>Phone:</strong> ${order.phone}</p>
       <p style="margin:4px 0;color:#4a4035;"><strong>Email:</strong> ${order.customerEmail}</p>
       <p style="margin:4px 0;color:#4a4035;"><strong>Fulfillment:</strong> ${order.fulfillmentType === "pickup" ? "Pickup" : "Delivery"}</p>
+      ${order.pickupDate ? `<p style="margin:4px 0;color:#4a4035;"><strong>Pickup Date:</strong> ${order.pickupDate}</p>` : ""}
+      ${order.pickupTime ? `<p style="margin:4px 0;color:#4a4035;"><strong>Pickup Time:</strong> ${order.pickupTime}</p>` : ""}
       ${order.deliveryAddress ? `<p style="margin:4px 0;color:#4a4035;"><strong>Address:</strong> ${order.deliveryAddress}</p>` : ""}
       <p style="margin:4px 0;color:#4a4035;"><strong>Payment:</strong> ${order.paymentMethod === "cash" ? "Cash" : "e-Transfer"}</p>
       ${order.notes ? `<p style="margin:4px 0;color:#4a4035;"><strong>Notes:</strong> ${order.notes}</p>` : ""}
@@ -100,6 +104,8 @@ function buildCustomerEmailHtml(order: OrderEmailData): string {
       <div style="background:#f5eed8;border-radius:8px;padding:16px 20px;margin:16px 0;">
         <p style="margin:4px 0;color:#4a4035;font-size:14px;"><strong>Order #:</strong> ${order.orderId}</p>
         <p style="margin:4px 0;color:#4a4035;font-size:14px;"><strong>Fulfillment:</strong> ${order.fulfillmentType === "pickup" ? "Pickup" : "Delivery"}</p>
+        ${order.pickupDate ? `<p style="margin:4px 0;color:#4a4035;font-size:14px;"><strong>Pickup Date:</strong> ${order.pickupDate}</p>` : ""}
+        ${order.pickupTime ? `<p style="margin:4px 0;color:#4a4035;font-size:14px;"><strong>Pickup Time:</strong> ${order.pickupTime}</p>` : ""}
         ${order.deliveryAddress ? `<p style="margin:4px 0;color:#4a4035;font-size:14px;"><strong>Delivery to:</strong> ${order.deliveryAddress}</p>` : ""}
         <p style="margin:4px 0;color:#4a4035;font-size:14px;"><strong>Payment:</strong> ${order.paymentMethod === "cash" ? "Cash on " + (order.fulfillmentType === "pickup" ? "pickup" : "delivery") : "e-Transfer"}</p>
         <p style="margin:8px 0 0;color:#4a6741;font-size:16px;font-weight:bold;"><strong>Total: $${order.totalAmount.toFixed(2)}</strong></p>
