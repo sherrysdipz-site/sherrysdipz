@@ -78,6 +78,7 @@ export function CheckoutPage() {
     createOrder.mutate({
       data: {
         ...data,
+        items: orderItems,
         fulfillmentType: 'pickup',
         deliveryAddress: null,
       }
