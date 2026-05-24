@@ -7,9 +7,8 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { ChevronLeft, Loader2, Store, Truck, Banknote, CreditCard, Calendar, Clock } from 'lucide-react';
+import { ChevronLeft, Loader2, Banknote, CreditCard, Calendar, Clock } from 'lucide-react';
 import { useCreateOrder } from '@workspace/api-client-react';
 
 const TIME_SLOTS = ['2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'];
@@ -17,15 +16,14 @@ const TIME_SLOTS = ['2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'];
 function getAvailablePickupDates(): { label: string; value: string }[] {
   const results: { label: string; value: string }[] = [];
   const today = new Date();
-  // Look ahead up to 30 days, collect Thu/Fri/Sat that are at least 2 days away
   for (let i = 2; i <= 30 && results.length < 8; i++) {
     const d = new Date(today);
     d.setDate(today.getDate() + i);
-    const dow = d.getDay(); // 0=Sun,1=Mon,2=Tue,3=Wed,4=Thu,5=Fri,6=Sat
+    const dow = d.getDay();
     if (dow === 4 || dow === 5 || dow === 6) {
       const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][dow];
       const label = `${dayName}, ${d.toLocaleDateString('en-CA', { month: 'long', day: 'numeric' })}`;
-      const value = d.toISOString().split('T')[0]; // YYYY-MM-DD
+      const value = d.toISOString().split('T')[0];
       results.push({ label, value });
     }
   }
@@ -36,28 +34,10 @@ const checkoutSchema = z.object({
   customerName: z.string().min(2, "Name is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(10, "Valid phone number is required"),
-  fulfillmentType: z.enum(['pickup', 'delivery']),
-  deliveryAddress: z.string().optional().nullable(),
   paymentMethod: z.enum(['cash', 'etransfer']),
   notes: z.string().optional().nullable(),
-  pickupDate: z.string().optional().nullable(),
-  pickupTime: z.string().optional().nullable(),
-}).superRefine((data, ctx) => {
-  if (data.fulfillmentType === 'delivery' && (!data.deliveryAddress || data.deliveryAddress.length < 5)) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Delivery address is required for delivery",
-      path: ['deliveryAddress']
-    });
-  }
-  if (data.fulfillmentType === 'pickup') {
-    if (!data.pickupDate) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Please select a pickup date", path: ['pickupDate'] });
-    }
-    if (!data.pickupTime) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Please select a pickup time", path: ['pickupTime'] });
-    }
-  }
+  pickupDate: z.string().min(1, "Please select a pickup date"),
+  pickupTime: z.string().min(1, "Please select a pickup time"),
 });
 
 type CheckoutFormValues = z.infer<typeof checkoutSchema>;
@@ -74,8 +54,6 @@ export function CheckoutPage() {
       customerName: '',
       email: '',
       phone: '',
-      fulfillmentType: 'pickup',
-      deliveryAddress: '',
       paymentMethod: 'etransfer',
       notes: '',
       pickupDate: '',
@@ -83,7 +61,6 @@ export function CheckoutPage() {
     }
   });
 
-  const watchFulfillment = form.watch('fulfillmentType');
   const watchPickupDate = form.watch('pickupDate');
 
   useEffect(() => {
@@ -101,10 +78,8 @@ export function CheckoutPage() {
     createOrder.mutate({
       data: {
         ...data,
-        items: orderItems,
-        deliveryAddress: data.fulfillmentType === 'pickup' ? null : data.deliveryAddress,
-        pickupDate: data.fulfillmentType === 'pickup' ? data.pickupDate : null,
-        pickupTime: data.fulfillmentType === 'pickup' ? data.pickupTime : null,
+        fulfillmentType: 'pickup',
+        deliveryAddress: null,
       }
     }, {
       onSuccess: (confirmation) => {
@@ -114,8 +89,8 @@ export function CheckoutPage() {
             confirmation,
             paymentMethod: data.paymentMethod,
             customerName: data.customerName,
-            pickupDate: data.fulfillmentType === 'pickup' ? data.pickupDate : null,
-            pickupTime: data.fulfillmentType === 'pickup' ? data.pickupTime : null,
+            pickupDate: data.pickupDate,
+            pickupTime: data.pickupTime,
           }
         });
       },
@@ -149,6 +124,7 @@ export function CheckoutPage() {
 
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+
                 {/* Contact Info */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium border-b pb-2">Contact Information</h3>
@@ -195,136 +171,68 @@ export function CheckoutPage() {
                   </div>
                 </div>
 
-                {/* Fulfillment */}
+                {/* Pickup Date & Time */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium border-b pb-2">Fulfillment Method</h3>
+                  <h3 className="text-lg font-medium border-b pb-2">Pickup Date & Time</h3>
+                  <p className="text-sm text-muted-foreground">Pick up is available Thursday–Saturday, 2–6 pm.</p>
+
                   <FormField
                     control={form.control}
-                    name="fulfillmentType"
+                    name="pickupDate"
                     render={({ field }) => (
-                      <FormItem className="space-y-3">
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-1.5"><Calendar className="h-4 w-4" /> Date</FormLabel>
                         <FormControl>
-                          <RadioGroup
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                            className="grid grid-cols-2 gap-4"
-                            data-testid="radio-fulfillment"
-                          >
-                            <FormItem>
-                              <FormLabel className="[&:has([data-state=checked])>div]:border-primary [&:has([data-state=checked])>div]:bg-primary/5 cursor-pointer">
-                                <FormControl>
-                                  <RadioGroupItem value="pickup" className="sr-only" data-testid="radio-pickup" />
-                                </FormControl>
-                                <div className="border rounded-lg p-4 flex flex-col items-center justify-center gap-2 hover:bg-muted/50 transition-colors">
-                                  <Store className="h-6 w-6" />
-                                  <span className="font-medium">Pick up</span>
-                                </div>
-                              </FormLabel>
-                            </FormItem>
-                            <FormItem>
-                              <FormLabel className="[&:has([data-state=checked])>div]:border-primary [&:has([data-state=checked])>div]:bg-primary/5 cursor-pointer">
-                                <FormControl>
-                                  <RadioGroupItem value="delivery" className="sr-only" data-testid="radio-delivery" />
-                                </FormControl>
-                                <div className="border rounded-lg p-4 flex flex-col items-center justify-center gap-2 hover:bg-muted/50 transition-colors">
-                                  <Truck className="h-6 w-6" />
-                                  <span className="font-medium">Delivery</span>
-                                </div>
-                              </FormLabel>
-                            </FormItem>
-                          </RadioGroup>
+                          <div className="flex flex-col gap-2">
+                            {availableDates.map(({ label, value }) => (
+                              <label
+                                key={value}
+                                className={`flex items-center gap-3 border rounded-lg px-4 py-3 cursor-pointer transition-colors ${field.value === value ? 'border-primary bg-primary/5 font-medium' : 'hover:bg-muted/50'}`}
+                              >
+                                <input
+                                  type="radio"
+                                  className="accent-primary"
+                                  checked={field.value === value}
+                                  onChange={() => {
+                                    field.onChange(value);
+                                    form.setValue('pickupTime', '');
+                                  }}
+                                />
+                                <span>{label}</span>
+                              </label>
+                            ))}
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
 
-                  {/* Pickup date + time — only shown for pickup */}
-                  {watchFulfillment === 'pickup' && (
-                    <div className="mt-4 space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
-                      <FormField
-                        control={form.control}
-                        name="pickupDate"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="flex items-center gap-1.5"><Calendar className="h-4 w-4" /> Pickup Date</FormLabel>
-                            <FormControl>
-                              <div className="flex flex-col gap-2">
-                                {availableDates.map(({ label, value }) => (
-                                  <label
-                                    key={value}
-                                    className={`flex items-center gap-3 border rounded-lg px-4 py-3 cursor-pointer transition-colors ${field.value === value ? 'border-primary bg-primary/5 font-medium' : 'hover:bg-muted/50'}`}
-                                  >
-                                    <input
-                                      type="radio"
-                                      className="accent-primary"
-                                      checked={field.value === value}
-                                      onChange={() => {
-                                        field.onChange(value);
-                                        form.setValue('pickupTime', '');
-                                      }}
-                                    />
-                                    <span>{label}</span>
-                                  </label>
-                                ))}
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {watchPickupDate && (
-                        <FormField
-                          control={form.control}
-                          name="pickupTime"
-                          render={({ field }) => (
-                            <FormItem className="animate-in fade-in slide-in-from-top-4 duration-300">
-                              <FormLabel className="flex items-center gap-1.5"><Clock className="h-4 w-4" /> Pickup Time</FormLabel>
-                              <FormControl>
-                                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                                  {TIME_SLOTS.map((slot) => (
-                                    <button
-                                      key={slot}
-                                      type="button"
-                                      onClick={() => field.onChange(slot)}
-                                      className={`border rounded-lg py-2.5 text-sm font-medium transition-colors ${field.value === slot ? 'border-primary bg-primary/5 text-primary' : 'hover:bg-muted/50'}`}
-                                    >
-                                      {slot}
-                                    </button>
-                                  ))}
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+                  {watchPickupDate && (
+                    <FormField
+                      control={form.control}
+                      name="pickupTime"
+                      render={({ field }) => (
+                        <FormItem className="animate-in fade-in slide-in-from-top-4 duration-300">
+                          <FormLabel className="flex items-center gap-1.5"><Clock className="h-4 w-4" /> Time</FormLabel>
+                          <FormControl>
+                            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                              {TIME_SLOTS.map((slot) => (
+                                <button
+                                  key={slot}
+                                  type="button"
+                                  onClick={() => field.onChange(slot)}
+                                  className={`border rounded-lg py-2.5 text-sm font-medium transition-colors ${field.value === slot ? 'border-primary bg-primary/5 text-primary' : 'hover:bg-muted/50'}`}
+                                >
+                                  {slot}
+                                </button>
+                              ))}
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
                       )}
-                    </div>
-                  )}
-
-                  {watchFulfillment === 'delivery' && (
-                    <div className="mt-4 animate-in fade-in slide-in-from-top-4 duration-300">
-                      <FormField
-                        control={form.control}
-                        name="deliveryAddress"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Delivery Address</FormLabel>
-                            <FormControl>
-                              <Textarea
-                                placeholder="123 Main St, Apartment 4B..."
-                                className="resize-none"
-                                {...field}
-                                value={field.value || ''}
-                                data-testid="input-address"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                    />
                   )}
                 </div>
 
@@ -335,39 +243,25 @@ export function CheckoutPage() {
                     control={form.control}
                     name="paymentMethod"
                     render={({ field }) => (
-                      <FormItem className="space-y-3">
+                      <FormItem>
                         <FormControl>
-                          <RadioGroup
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                            className="grid grid-cols-2 gap-4"
-                            data-testid="radio-payment"
-                          >
-                            <FormItem>
-                              <FormLabel className="[&:has([data-state=checked])>div]:border-primary [&:has([data-state=checked])>div]:bg-primary/5 cursor-pointer">
-                                <FormControl>
-                                  <RadioGroupItem value="etransfer" className="sr-only" data-testid="radio-etransfer" />
-                                </FormControl>
-                                <div className="border rounded-lg p-4 flex flex-col items-center justify-center gap-2 hover:bg-muted/50 transition-colors text-center">
-                                  <CreditCard className="h-6 w-6" />
-                                  <span className="font-medium">e-Transfer</span>
-                                  <span className="text-xs text-muted-foreground">Pay after confirming</span>
-                                </div>
-                              </FormLabel>
-                            </FormItem>
-                            <FormItem>
-                              <FormLabel className="[&:has([data-state=checked])>div]:border-primary [&:has([data-state=checked])>div]:bg-primary/5 cursor-pointer">
-                                <FormControl>
-                                  <RadioGroupItem value="cash" className="sr-only" data-testid="radio-cash" />
-                                </FormControl>
-                                <div className="border rounded-lg p-4 flex flex-col items-center justify-center gap-2 hover:bg-muted/50 transition-colors text-center">
-                                  <Banknote className="h-6 w-6" />
-                                  <span className="font-medium">Cash</span>
-                                  <span className="text-xs text-muted-foreground">Pay on pickup</span>
-                                </div>
-                              </FormLabel>
-                            </FormItem>
-                          </RadioGroup>
+                          <div className="grid grid-cols-2 gap-4">
+                            {[
+                              { value: 'etransfer', icon: <CreditCard className="h-6 w-6" />, label: 'e-Transfer', sub: 'Pay after confirming' },
+                              { value: 'cash', icon: <Banknote className="h-6 w-6" />, label: 'Cash', sub: 'Pay on pickup' },
+                            ].map(({ value, icon, label, sub }) => (
+                              <button
+                                key={value}
+                                type="button"
+                                onClick={() => field.onChange(value)}
+                                className={`border rounded-lg p-4 flex flex-col items-center justify-center gap-2 transition-colors text-center ${field.value === value ? 'border-primary bg-primary/5' : 'hover:bg-muted/50'}`}
+                              >
+                                {icon}
+                                <span className="font-medium">{label}</span>
+                                <span className="text-xs text-muted-foreground">{sub}</span>
+                              </button>
+                            ))}
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
