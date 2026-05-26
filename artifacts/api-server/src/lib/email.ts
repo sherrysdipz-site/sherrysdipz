@@ -3,7 +3,7 @@ import { logger } from "./logger";
 
 const FROM_EMAIL = "onboarding@resend.dev";
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "sherrysdipz@gmail.com";
-const ETRANSFER_EMAIL = process.env.ETRANSFER_EMAIL ?? "sherrysdipz@gmail.com";
+const ETRANSFER_EMAIL = process.env.ETRANSFER_EMAIL ?? "mrsizzypops@hotmail.com";
 
 export interface OrderEmailData {
   orderId: string;
