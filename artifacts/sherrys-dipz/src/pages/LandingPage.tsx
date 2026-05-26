@@ -100,7 +100,7 @@ export function LandingPage() {
         <div className="max-w-3xl mx-auto text-center px-6 mb-12">
           <h2 className="font-serif text-4xl font-bold text-foreground mb-4">Our Dips</h2>
           <p className="text-muted-foreground text-lg">
-            Every jar is made fresh when you order — no preservatives, no fillers, just pure ingredients you can taste.
+            Every dip is made fresh when you order — no preservatives, no fillers, just pure ingredients you can taste.
           </p>
         </div>
         <ProductGrid />
