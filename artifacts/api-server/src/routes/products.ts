@@ -7,14 +7,14 @@ const PRODUCTS = [
   {
     id: "labneh",
     name: "Labneh",
-    description: "Silky strained yogurt cheese, tangy and rich, drizzled with extra-virgin olive oil. A Lebanese staple.",
+    description: "Silky strained yogurt cheese, tangy and rich, drizzled with extra-virgin olive oil. A Middle Eastern staple.",
     price: 12.0,
     emoji: "🫙",
   },
   {
     id: "hummus",
     name: "Hummus",
-    description: "Classic Lebanese hummus made with hand-picked chickpeas, fresh lemon juice, and premium tahini.",
+    description: "Classic Middle Eastern hummus made with hand-picked chickpeas, fresh lemon juice, and premium tahini.",
     price: 12.0,
     emoji: "🫙",
   },
