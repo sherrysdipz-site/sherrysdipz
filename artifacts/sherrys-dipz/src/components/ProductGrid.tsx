@@ -15,7 +15,7 @@ const products = [
   {
     id: "hummus",
     name: "Hummus",
-    description: "Handcrafted Lebanese hummus with hand-picked chickpeas, fresh lemon juice, and premium tahini. No fillers, no preservatives — just the real thing.",
+    description: "Handcrafted Middle Eastern hummus with hand-picked chickpeas, fresh lemon juice, and premium tahini. No fillers, no preservatives — just the real thing.",
     price: 12.00,
     image: dipPhoto
   },
