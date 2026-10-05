@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useMemo, ReactNode } from "react";
+import React, { createContext, useContext, useEffect, useState, useMemo, ReactNode } from "react";
 
 export interface CartItem {
   productId: string;
@@ -20,10 +20,43 @@ interface CartContextType {
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
+const CART_STORAGE_KEY = "sherrys-dipz-cart";
+
+function getSavedCart(): CartItem[] {
+  try {
+    const saved = window.localStorage.getItem(CART_STORAGE_KEY);
+    if (!saved) return [];
+
+    const parsed: unknown = JSON.parse(saved);
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed.filter((item): item is CartItem =>
+      item !== null &&
+      typeof item === "object" &&
+      typeof item.productId === "string" &&
+      typeof item.name === "string" &&
+      typeof item.price === "number" &&
+      Number.isFinite(item.price) &&
+      typeof item.quantity === "number" &&
+      Number.isInteger(item.quantity) &&
+      item.quantity > 0
+    );
+  } catch {
+    return [];
+  }
+}
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [items, setItems] = useState<CartItem[]>(getSavedCart);
   const [isCartOpen, setIsCartOpen] = useState(false);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+    } catch {
+      // Keep the current in-memory cart usable if browser storage is unavailable.
+    }
+  }, [items]);
 
   const addItem = (newItem: Omit<CartItem, "quantity">) => {
     setItems((currentItems) => {
@@ -37,7 +70,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
       return [...currentItems, { ...newItem, quantity: 1 }];
     });
-    setIsCartOpen(true);
   };
 
   const removeItem = (productId: string) => {

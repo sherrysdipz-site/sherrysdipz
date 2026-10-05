@@ -2,18 +2,27 @@ import React from 'react';
 import { useCart } from '@/context/CartContext';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Minus, Plus, ShoppingBag, X } from 'lucide-react';
+import { ChevronRight, Minus, Plus, ShoppingBag, X } from 'lucide-react';
 import { useLocation } from 'wouter';
-import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 export function CartSlideover() {
   const { isCartOpen, setIsCartOpen, items, updateQuantity, removeItem, subtotal, totalItems } = useCart();
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
 
   const handleCheckout = () => {
     setIsCartOpen(false);
     setLocation('/checkout');
+  };
+
+  const handleAddMore = () => {
+    setIsCartOpen(false);
+    if (location !== '/') setLocation('/');
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        document.getElementById('products')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
   };
 
   return (
@@ -94,17 +103,27 @@ export function CartSlideover() {
         </div>
 
         {items.length > 0 && (
-          <div className="p-6 bg-card border-t mt-auto">
+          <div className="p-5 sm:p-6 bg-card border-t mt-auto space-y-3">
             <div className="flex justify-between mb-4">
               <span className="text-muted-foreground">Subtotal ({totalItems} items)</span>
               <span className="font-medium">${subtotal.toFixed(2)}</span>
             </div>
+            <Button
+              variant="outline"
+              className="w-full h-11"
+              onClick={handleAddMore}
+              data-testid="button-add-more-dips"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add more dips
+            </Button>
             <Button 
               className="w-full text-lg h-12 font-serif" 
               onClick={handleCheckout}
               data-testid="button-checkout"
             >
-              Proceed to Checkout
+              Review order & checkout
+              <ChevronRight className="h-4 w-4 ml-2" />
             </Button>
           </div>
         )}

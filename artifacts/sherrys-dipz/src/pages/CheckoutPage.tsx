@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useCart } from '@/context/CartContext';
-import { useLocation, Link } from 'wouter';
+import { useLocation } from 'wouter';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -8,8 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { ChevronLeft, Loader2, Banknote, CreditCard, Calendar, Clock } from 'lucide-react';
+import { ChevronLeft, Loader2, Banknote, CreditCard, Calendar, Clock, ShoppingBag } from 'lucide-react';
 import { useCreateOrder } from '@workspace/api-client-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const TIME_SLOTS = ['2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'];
 
@@ -43,10 +44,12 @@ const checkoutSchema = z.object({
 type CheckoutFormValues = z.infer<typeof checkoutSchema>;
 
 export function CheckoutPage() {
-  const { items, subtotal, totalItems, clearCart } = useCart();
+  const { items, subtotal, totalItems, clearCart, setIsCartOpen } = useCart();
   const [, setLocation] = useLocation();
   const createOrder = useCreateOrder();
   const availableDates = useMemo(() => getAvailablePickupDates(), []);
+  const orderSubmitted = useRef(false);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
 
   const form = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutSchema),
@@ -64,10 +67,11 @@ export function CheckoutPage() {
   const watchPickupDate = form.watch('pickupDate');
 
   useEffect(() => {
-    if (items.length === 0) setLocation('/');
+    if (items.length === 0 && !orderSubmitted.current) setLocation('/');
   }, [items.length, setLocation]);
 
   const onSubmit = (data: CheckoutFormValues) => {
+    setSubmissionError(null);
     const orderItems = items.map(item => ({
       productId: item.productId,
       name: item.name,
@@ -84,6 +88,7 @@ export function CheckoutPage() {
       }
     }, {
       onSuccess: (confirmation) => {
+        orderSubmitted.current = true;
         clearCart();
         setLocation('/thank-you', {
           state: {
@@ -96,10 +101,26 @@ export function CheckoutPage() {
         });
       },
       onError: (err: unknown) => {
-        console.error('Order submission failed:', err);
-        const msg = err instanceof Error ? err.message : String(err);
-        alert(`Order failed: ${msg}\n\nPlease try again or contact us directly.`);
+        const isConnectionError =
+          err instanceof TypeError ||
+          (err instanceof Error && /failed to fetch|network|load failed/i.test(err.message));
+        const message = isConnectionError
+          ? "We couldn't reach the order service. Your cart is saved on this device; check your connection and try again in a moment. If you already saw an order confirmation, don't submit a second time."
+          : err instanceof Error
+            ? err.message
+            : "Please check your details and try again.";
+        setSubmissionError(message);
       }
+    });
+  };
+
+  const handleAddMore = () => {
+    setIsCartOpen(false);
+    setLocation('/');
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        document.getElementById('products')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
     });
   };
 
@@ -108,24 +129,49 @@ export function CheckoutPage() {
   return (
     <div className="min-h-screen bg-muted/30">
       <header className="bg-background border-b sticky top-0 z-30">
-        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center">
-          <Link href="/" className="flex items-center text-muted-foreground hover:text-foreground transition-colors font-medium">
+        <div className="max-w-5xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between relative">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground hover:text-foreground font-medium px-2 sm:px-3"
+            onClick={handleAddMore}
+            data-testid="button-checkout-add-more"
+          >
             <ChevronLeft className="h-4 w-4 mr-1" />
-            Back to Menu
-          </Link>
-          <div className="mx-auto font-serif text-xl font-bold text-primary absolute left-1/2 -translate-x-1/2">
+            <span className="hidden sm:inline">Add more dips</span>
+            <span className="sm:hidden">Menu</span>
+          </Button>
+          <div className="font-serif text-lg sm:text-xl font-bold text-primary absolute left-1/2 -translate-x-1/2 pointer-events-none">
             Checkout
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="relative px-3"
+            onClick={() => setIsCartOpen(true)}
+            aria-label={"Open cart with " + totalItems + " items"}
+            data-testid="button-checkout-open-cart"
+          >
+            <ShoppingBag className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Cart</span>
+            <span className="ml-2 tabular-nums">{totalItems}</span>
+          </Button>
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10 pb-36 lg:pb-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
         <div className="lg:col-span-7">
           <div className="bg-card border rounded-xl p-6 md:p-8 shadow-sm">
             <h2 className="font-serif text-2xl font-bold mb-6 text-foreground">Order Details</h2>
+            {submissionError && (
+              <Alert variant="destructive" className="mb-6">
+                <AlertTitle>Order not confirmed</AlertTitle>
+                <AlertDescription>{submissionError}</AlertDescription>
+              </Alert>
+            )}
 
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <form id="checkout-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 
                 {/* Contact Info */}
                 <div className="space-y-4">
@@ -295,20 +341,6 @@ export function CheckoutPage() {
                   />
                 </div>
 
-                <div className="pt-4 lg:hidden">
-                  <Button
-                    type="submit"
-                    className="w-full h-14 text-lg font-serif"
-                    disabled={createOrder.isPending}
-                    data-testid="button-submit-order-mobile"
-                  >
-                    {createOrder.isPending ? (
-                      <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Processing...</>
-                    ) : (
-                      `Place Order • $${subtotal.toFixed(2)}`
-                    )}
-                  </Button>
-                </div>
               </form>
             </Form>
           </div>
@@ -343,8 +375,9 @@ export function CheckoutPage() {
             </div>
 
             <Button
+              type="submit"
+              form="checkout-form"
               className="w-full h-14 text-lg font-serif mt-8 hidden lg:flex"
-              onClick={form.handleSubmit(onSubmit)}
               disabled={createOrder.isPending}
               data-testid="button-submit-order"
             >
@@ -361,6 +394,33 @@ export function CheckoutPage() {
           </div>
         </div>
       </main>
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 border-t bg-background/95 backdrop-blur px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(0,0,0,0.08)]">
+        <div className="max-w-5xl mx-auto flex items-center gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            className="h-12 shrink-0 px-3"
+            onClick={() => setIsCartOpen(true)}
+            data-testid="button-mobile-open-cart"
+          >
+            <ShoppingBag className="h-4 w-4 mr-2" />
+            Cart ({totalItems})
+          </Button>
+          <Button
+            type="submit"
+            form="checkout-form"
+            className="h-12 flex-1 text-base font-serif"
+            disabled={createOrder.isPending}
+            data-testid="button-submit-order-mobile"
+          >
+            {createOrder.isPending ? (
+              <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Processing...</>
+            ) : (
+              `Place Order • $${subtotal.toFixed(2)}`
+            )}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
