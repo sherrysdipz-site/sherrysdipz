@@ -75,7 +75,14 @@ router.post("/orders", async (req, res): Promise<void> => {
       pickupTime: order.pickupTime,
     });
   } catch (err) {
-    req.log.error({ err }, "Email send failed");
+    // The admin email is the only record of the order, so don't tell the
+    // customer it went through when it didn't.
+    req.log.error({ err, orderId, order: sheetRow }, "Email send failed");
+    res.status(503).json({
+      error:
+        "Sorry, we couldn't place your order right now. Please try again in a few minutes, or email sherrysdipz@gmail.com with your order.",
+    });
+    return;
   }
 
   res.status(201).json({
@@ -84,7 +91,7 @@ router.post("/orders", async (req, res): Promise<void> => {
     totalAmount,
     etransferEmail:
       order.paymentMethod === "etransfer"
-        ? (process.env.ADMIN_EMAIL ?? "mrsizzypops@hotmail.com")
+        ? (process.env.ETRANSFER_EMAIL ?? "mrsizzypops@hotmail.com")
         : null,
   });
 });

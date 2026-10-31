@@ -107,7 +107,7 @@ export function CheckoutPage() {
         const message = isConnectionError
           ? "We couldn't reach the order service. Your cart is saved on this device; check your connection and try again in a moment. If you already saw an order confirmation, don't submit a second time."
           : err instanceof Error
-            ? err.message
+            ? err.message.replace(/^HTTP \d+[^:]*: /, '')
             : "Please check your details and try again.";
         setSubmissionError(message);
       }

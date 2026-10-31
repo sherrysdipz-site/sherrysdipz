@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 import { logger } from "./logger";
 
-const FROM_EMAIL = "onboarding@resend.dev";
+const FROM_EMAIL = process.env.FROM_EMAIL ?? "onboarding@resend.dev";
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "sherrysdipz@gmail.com";
 const ETRANSFER_EMAIL = process.env.ETRANSFER_EMAIL ?? "mrsizzypops@hotmail.com";
 
@@ -124,6 +124,9 @@ function buildCustomerEmailHtml(order: OrderEmailData): string {
 export async function sendOrderEmails(order: OrderEmailData): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("RESEND_API_KEY not set");
+    }
     logger.warn("RESEND_API_KEY not set — skipping email send");
     return;
   }

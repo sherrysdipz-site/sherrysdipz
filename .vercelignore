@@ -1,0 +1,9 @@
+node_modules
+**/node_modules
+**/dist
+.local
+.cache
+.agents
+.claude
+.vercel
+.DS_Store
