@@ -20,7 +20,7 @@ export function CartSlideover() {
     if (location !== '/') setLocation('/');
     window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => {
-        document.getElementById('products')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     });
   };
@@ -105,7 +105,7 @@ export function CartSlideover() {
         {items.length > 0 && (
           <div className="p-5 sm:p-6 bg-card border-t mt-auto space-y-3">
             <div className="flex justify-between mb-4">
-              <span className="text-muted-foreground">Subtotal ({totalItems} items)</span>
+              <span className="text-muted-foreground">Subtotal ({totalItems} {totalItems === 1 ? 'item' : 'items'})</span>
               <span className="font-medium">${subtotal.toFixed(2)}</span>
             </div>
             <Button

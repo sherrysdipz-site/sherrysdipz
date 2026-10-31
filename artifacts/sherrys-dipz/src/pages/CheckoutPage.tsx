@@ -119,7 +119,7 @@ export function CheckoutPage() {
     setLocation('/');
     window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => {
-        document.getElementById('products')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     });
   };
@@ -365,7 +365,7 @@ export function CheckoutPage() {
 
             <div className="border-t pt-4 space-y-3">
               <div className="flex justify-between text-muted-foreground">
-                <span>Subtotal ({totalItems} items)</span>
+                <span>Subtotal ({totalItems} {totalItems === 1 ? 'item' : 'items'})</span>
                 <span>${subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between font-serif text-xl font-bold text-foreground pt-2">
@@ -389,7 +389,7 @@ export function CheckoutPage() {
             </Button>
 
             <p className="text-xs text-center text-muted-foreground mt-4">
-              By placing your order, you agree to our Terms of Service.
+              You'll get an order number right away. Sherry will have it ready at your pickup time.
             </p>
           </div>
         </div>

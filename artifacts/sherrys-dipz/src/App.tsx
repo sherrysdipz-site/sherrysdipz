@@ -10,6 +10,8 @@ import { AboutPage } from "@/pages/AboutPage";
 import { CheckoutPage } from "@/pages/CheckoutPage";
 import { ThankYouPage } from "@/pages/ThankYouPage";
 import { CartSlideover } from "@/components/CartSlideover";
+import { MobileCartBar } from "@/components/MobileCartBar";
+import { ScrollManager } from "@/components/ScrollManager";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -38,7 +40,9 @@ function App() {
       <TooltipProvider>
         <CartProvider>
           <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+            <ScrollManager />
             <Router />
+            <MobileCartBar />
             <CartSlideover />
           </WouterRouter>
           <Toaster />
