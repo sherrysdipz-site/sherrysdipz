@@ -34,7 +34,7 @@ export function LandingPage() {
       <SiteHeader />
 
       {/* Hero */}
-      <section className="max-w-6xl w-full mx-auto px-4 sm:px-6 pt-4 pb-14 md:py-16 grid md:grid-cols-[1fr_1.1fr] gap-8 md:gap-12 items-center">
+      <section className="max-w-6xl w-full mx-auto px-4 sm:px-6 pt-16 pb-14 md:pt-24 md:pb-16 grid md:grid-cols-[1fr_1.1fr] gap-8 md:gap-12 items-center">
         <div className="md:order-2 aspect-[5/4] md:aspect-[6/5] rounded-3xl overflow-hidden bg-muted">
           <picture>
             <source media="(min-width: 768px)" srcSet="/images/dips/hero.jpg" />

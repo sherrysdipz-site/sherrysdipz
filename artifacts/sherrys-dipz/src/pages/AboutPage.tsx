@@ -11,7 +11,7 @@ export function AboutPage() {
       <SiteHeader />
 
       {/* Hero Banner */}
-      <section className="bg-primary/10 border-b py-16 px-6 text-center">
+      <section className="bg-primary/10 border-b pt-20 pb-16 md:pt-28 px-6 text-center">
         <p className="text-sm font-medium text-secondary uppercase tracking-[0.2em] mb-3">Our story</p>
         <h1 className="font-serif text-5xl md:text-6xl font-bold text-foreground max-w-2xl mx-auto leading-tight">
           Meet the Founder
